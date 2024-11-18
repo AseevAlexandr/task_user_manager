@@ -33,5 +33,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include(router1.urls)),  # http://127.0.0.1:8000/api/v1/tasks/
     path('api/v2/', include(router2.urls)),  # http://127.0.0.1:8000/api/v2/users/
-
 ]
