@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'tasks.apps.TasksConfig',
     'users.apps.UsersConfig',
+    'drf_yasg',
 
 ]
 

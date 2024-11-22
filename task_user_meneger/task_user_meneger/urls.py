@@ -22,7 +22,23 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from tasks.views import TaskViewSet
 from users.views import UserViewSet
-from rest_framework import routers
+from rest_framework import routers, permissions
+
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+schema_view = get_schema_view(
+   openapi.Info(
+      title="Your API Title",
+      default_version='v1',
+      description="Описание вашего API",
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="contact@yourcompany.com"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=[permissions.AllowAny],
+)
 
 router1 = routers.SimpleRouter()
 router1.register(r'tasks', TaskViewSet, basename='tasks')
@@ -32,11 +48,16 @@ router2.register(r'users', UserViewSet, basename='users')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
     path('api/v1/', include(router1.urls)),  # http://127.0.0.1:8000/api/v1/tasks/
     path('api/v2/', include(router2.urls)),  # http://127.0.0.1:8000/api/v2/users/
+
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'), # http://127.0.0.1:8000/api/token/
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # http://127.0.0.1:8000/api/token/refresh/
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'), # http://127.0.0.1:8000/api/token/verify/
+
+    path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
 
 
