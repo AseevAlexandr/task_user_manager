@@ -61,5 +61,3 @@ urlpatterns = [
 ]
 
 
-"""log-SecondUser
-pass-fghj4321"""
