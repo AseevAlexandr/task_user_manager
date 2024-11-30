@@ -60,5 +60,5 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
 
-# user1
-# fghj4321
+# User_1
+# fghj1234
