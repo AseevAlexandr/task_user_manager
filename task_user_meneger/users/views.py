@@ -9,7 +9,6 @@ from .serializers import UserSerializers
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializers
-    # permission_classes = [IsAuthenticated]
 
     def get_permissions(self):
         if self.action == 'create':
