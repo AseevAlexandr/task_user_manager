@@ -2,6 +2,10 @@ from django.db import models
 from users.models import User
 
 class Tasks(models.Model):
+    """
+    Модель задачи.
+    Принимает значения: Названия, описание, статус, пользователя имя создавшего задачу
+    """
     task_title = models.CharField(max_length=100)
     task_content = models.TextField()
 
