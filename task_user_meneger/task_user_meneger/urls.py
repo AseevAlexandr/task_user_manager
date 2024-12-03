@@ -27,6 +27,8 @@ from rest_framework import routers, permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+from users.views import index_page
+
 schema_view = get_schema_view(
    openapi.Info(
       title="Your API Title",
@@ -47,6 +49,7 @@ router2 = routers.SimpleRouter()
 router2.register(r'users', UserViewSet, basename='users')
 
 urlpatterns = [
+    path('',index_page),
     path('admin/', admin.site.urls),
 
     path('api/v1/', include(router1.urls)),  # http://127.0.0.1:8000/api/v1/tasks/
@@ -56,9 +59,8 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # http://127.0.0.1:8000/api/token/refresh/
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'), # http://127.0.0.1:8000/api/token/verify/
 
-    path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'), # http://127.0.0.1:8000/docs/
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'), # http://127.0.0.1:8000/redoc/
 ]
 
-# User_1
-# fghj1234
+

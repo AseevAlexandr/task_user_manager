@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -17,3 +18,6 @@ class UserViewSet(ModelViewSet):
             permission_classes = [IsAuthenticated]
         return super().get_permissions()
 
+
+def index_page(request):
+    return render(request, 'index.html')

@@ -29,3 +29,6 @@ python manage.py test # Windows
 Для тестирования отдельного приложения :
 python3 manage.py test tasks # Linux/MacOS
 python manage.py test users # Windows
+
+Документация проекта доступна по ссылке:
+http://127.0.0.1:8000/docs/
