@@ -21,3 +21,9 @@ class TaskViewSet(viewsets.ModelViewSet):
     queryset = Tasks.objects.all()
     serializer_class = TasksSerializers
     permission_classes = [IsAuthenticated, IsAuthorOnly]
+
+    def perform_update(self, serializer):
+        # Убираем 'task_user' из данных, чтобы он не был изменён
+        serializer.validated_data.pop('task_user', None)
+        # Выполняем обновление без изменения task_user
+        serializer.save()
