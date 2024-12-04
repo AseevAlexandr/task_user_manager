@@ -13,15 +13,7 @@
 #### HTTPS:
 git clone https://github.com/AseevAlexandr/task_user_manager.git
 
-### Установите и активируйте виртуальное окружение:
-
-## Установка виртуалного окружения:
-
-# Для Linux/MacOS:
-python3 -m venv venv
-
-# Для Windows:
-python -m venv venv
+###  Aктивируйте виртуальное окружение:
 
 ## Активируйте виртуальное окружение:
 
@@ -37,10 +29,6 @@ pip install -r requirements.txt
 
 ### Для запуска локального сервера используйте одну из следующих команд:
 
-# Для Linux/MacOS:
-python3 manage.py runserver
-
-# Для Windows:
 python manage.py runserver
 
 ## Доступ к приложениям
@@ -78,7 +66,8 @@ python3 manage.py test tasks
 # Для Windows:
 python manage.py test tasks
 
-# Для тестирования приложения users: Для Linux/MacOS:
+# Для тестирования приложения users: 
+# Для Linux/MacOS:
 python3 manage.py test users
 
 # Для Windows:
@@ -87,4 +76,5 @@ python manage.py test users
 ## Документация
 
 # Документация проекта доступна по следующей ссылке:
+
 http://127.0.0.1:8000/docs/
