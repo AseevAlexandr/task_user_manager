@@ -6,7 +6,15 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 User = get_user_model()
 
-class AuthTests(APITestCase):
+
+class TokenMixin:
+    def _get_token_for_user(self, user):
+        """Получаем токен для аутентификации пользователя"""
+        refresh = RefreshToken.for_user(user)
+        return str(refresh.access_token)
+
+
+class AuthTests(APITestCase, TokenMixin):
     def setUp(self):
         """Создаем тестового пользователя для аутентификации"""
         self.user_data = {
@@ -15,11 +23,6 @@ class AuthTests(APITestCase):
             "password": "password123"
         }
         self.user = User.objects.create_user(**self.user_data)
-
-    def _get_token_for_user(self, user):
-        """Получаем токен для аутентификации пользователя"""
-        refresh = RefreshToken.for_user(user)
-        return str(refresh.access_token)
 
     def test_login(self):
         """Тест аутентификации пользователя"""
@@ -38,7 +41,7 @@ class AuthTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class UserTests(APITestCase):
+class UserTests(APITestCase, TokenMixin):
     def setUp(self):
         """Создаем тестового пользователя для использования в тестах"""
         self.user_data = {
@@ -48,11 +51,6 @@ class UserTests(APITestCase):
         }
         self.user = User.objects.create_user(**self.user_data)
         self.token = self._get_token_for_user(self.user)
-
-    def _get_token_for_user(self, user):
-        """Получаем токен для аутентификации пользователя"""
-        refresh = RefreshToken.for_user(user)
-        return str(refresh.access_token)
 
     def test_create_user(self):
         """Тест создания нового пользователя"""
