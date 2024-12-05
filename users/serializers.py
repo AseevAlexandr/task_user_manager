@@ -26,3 +26,15 @@ class UserSerializers(serializers.ModelSerializer):
         user.is_active = True
         user.save()
         return user
+
+    def update(self, instance, validated_data):
+        """
+        Функция update обновляет пользователя. Если пароль был изменен, хэширует его перед сохранением.
+        """
+        for attr, value in validated_data.items():
+            if attr == 'password':
+                value = make_password(value)
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
