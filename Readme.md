@@ -13,8 +13,6 @@
 #### HTTPS:
 git clone https://github.com/AseevAlexandr/task_user_manager.git
 
-###  Aктивируйте виртуальное окружение:
-
 ## Активируйте виртуальное окружение:
 
 # Для Linux/MacOS:

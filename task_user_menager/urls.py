@@ -1,5 +1,5 @@
 """
-URL configuration for task_user_meneger project.
+URL configuration for task_user_menager project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.1/topics/http/urls/
@@ -42,18 +42,16 @@ schema_view = get_schema_view(
    permission_classes=[permissions.AllowAny],
 )
 
-router1 = routers.SimpleRouter()
-router1.register(r'tasks', TaskViewSet, basename='tasks')
-
-router2 = routers.SimpleRouter()
-router2.register(r'users', UserViewSet, basename='users')
+router = routers.SimpleRouter()
+router.register(r'tasks', TaskViewSet, basename='tasks')
+router.register(r'users', UserViewSet, basename='users')
 
 urlpatterns = [
     path('',index_page),
     path('admin/', admin.site.urls),
 
-    path('api/v1/', include(router1.urls)),  # http://127.0.0.1:8000/api/v1/tasks/
-    path('api/v2/', include(router2.urls)),  # http://127.0.0.1:8000/api/v2/users/
+    path('api/v1/', include(router.urls)),  # http://127.0.0.1:8000/api/v1/tasks/
+    path('api/v2/', include(router.urls)),  # http://127.0.0.1:8000/api/v2/users/
 
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'), # http://127.0.0.1:8000/api/token/
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # http://127.0.0.1:8000/api/token/refresh/
