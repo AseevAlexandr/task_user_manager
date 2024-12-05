@@ -9,7 +9,8 @@ class IsAuthorOnly(BasePermission):
     """
     Класс определяющий разрешения на создание, изменения, удаление задачи только для автора
     """
-    def task_permission(self, request, view, obj):
+    def has_object_permission(self, request, view, obj):
+        """ функция проверяет, является ли текущий пользователь автором задачи, и если да, то разрешает ему доступ"""
         if request.user == obj.author:
             return True
 
@@ -23,7 +24,11 @@ class TaskViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsAuthorOnly]
 
     def perform_update(self, serializer):
-        # Убираем 'task_user' из данных, чтобы он не был изменён
         serializer.validated_data.pop('task_user', None)
-        # Выполняем обновление без изменения task_user
         serializer.save()
+
+    def get_queryset(self):
+        """
+        Возвращает задачи, связанные с текущим пользователем (пользователь должен быть авторизован).
+        """
+        return Tasks.objects.filter(task_user=self.request.user)
