@@ -7,9 +7,10 @@ from .models import Tasks
 class TaskAPITests(APITestCase):
 
     def setUp(self):
-        """Создадим пользователей для тестов"""
+        """Создаем пользователя и задачу для тестов"""
         self.user = User.objects.create_user(username="testuser", password="testpassword")
         self.other_user = User.objects.create_user(username="otheruser", password="otherpassword")
+
         """Логинимся для тестов"""
         self.client = APIClient()
         """Получаем JWT токен для аутентификации"""
@@ -17,94 +18,86 @@ class TaskAPITests(APITestCase):
         self.access_token = response.data['access']
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
 
-        """Создаем задачу для теста"""
-        self.task_data = {
-            'task_title': 'Test Task',
-            'task_content': 'Content of test task',
-            'task_status': 'новая',
-            'task_user': self.user.id
-        }
-
-    def test_create_task(self):
-        """Тест на создание задачи"""
-        response = self.client.post('/api/v1/tasks/', self.task_data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['task_title'], self.task_data['task_title'])
-
-    def test_create_task_unauthorized(self):
-        """Тест на создание задачи без авторизации"""
-        self.client.credentials()
-        response = self.client.post('/api/v1/tasks/', self.task_data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_get_task(self):
-        """Тест на получение задачи"""
-        task = Tasks.objects.create(
+        """Создаем задачу для тестов"""
+        self.task = Tasks.objects.create(
             task_title='Test Task',
             task_content='Content of test task',
             task_status='новая',
             task_user=self.user
         )
-        response = self.client.get(f'/api/v1/tasks/{task.id}/')
+
+    def test_create_task(self):
+        """Тест на создание задачи"""
+        response = self.client.post('/api/v1/tasks/', {
+            'task_title': 'Another Test Task',
+            'task_content': 'Content of another test task',
+            'task_status': 'новая',
+            'task_user': self.user.id
+        }, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['task_title'], 'Another Test Task')
+
+    def test_create_task_unauthorized(self):
+        """Тест на создание задачи без авторизации"""
+        self.client.credentials()  # Очищаем токен
+        response = self.client.post('/api/v1/tasks/', {
+            'task_title': 'Another Test Task',
+            'task_content': 'Content of another test task',
+            'task_status': 'новая',
+            'task_user': self.user.id
+        }, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_create_task_with_long_title(self):
+        """Тест на создание задачи с слишком длинным заголовком"""
+        long_title = 'A' * 256  # Если max_length=255, то длина заголовка не должна превышать 255 символов
+        response = self.client.post('/api/v1/tasks/', {
+            'task_title': long_title,
+            'task_content': 'Content of test task with long title',
+            'task_status': 'новая',
+            'task_user': self.user.id
+        }, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('task_title', response.data)
+
+    def test_get_task(self):
+        """Тест на получение задачи"""
+        response = self.client.get(f'/api/v1/tasks/{self.task.id}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['task_title'], task.task_title)
+        self.assertEqual(response.data['task_title'], self.task.task_title)
         self.assertEqual(response.data['task_user'], self.user.id)
 
     def test_update_task(self):
         """Тест на обновление задачи"""
-        task = Tasks.objects.create(
-            task_title='Test Task',
-            task_content='Content of test task',
-            task_status='новая',
-            task_user=self.user
-        )
         updated_data = {'task_title': 'Updated Test Task'}
-        response = self.client.patch(f'/api/v1/tasks/{task.id}/', updated_data, format='json')
+        response = self.client.patch(f'/api/v1/tasks/{self.task.id}/', updated_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['task_title'], updated_data['task_title'])
 
-
     def test_delete_task(self):
         """Тест на удаление задачи"""
-        task = Tasks.objects.create(
-            task_title='Test Task',
-            task_content='Content of test task',
-            task_status='новая',
-            task_user=self.user
-        )
-        response = self.client.delete(f'/api/v1/tasks/{task.id}/')
+        response = self.client.delete(f'/api/v1/tasks/{self.task.id}/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(Tasks.objects.filter(id=task.id).exists())
+        self.assertFalse(Tasks.objects.filter(id=self.task.id).exists())
 
     def test_delete_task_unauthorized(self):
         """Тест на удаление задачи без авторизации"""
-        """Создаем задачу и связываем с пользователем"""
-        task = Tasks.objects.create(
-            task_title='Test Task',
-            task_content='Content of test task',
-            task_status='новая',
-            task_user=self.user
-        )
-        """Убираем авторизацию"""
         self.client.credentials()  # Очищаем токен
-        """Пытаемся удалить задачу без авторизации"""
-        response = self.client.delete(f'/api/v1/tasks/{task.id}/')
-        """Проверяем, что ответ имеет статус 401 Unauthorized"""
+        response = self.client.delete(f'/api/v1/tasks/{self.task.id}/')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_task_validation(self):
         """Тест на валидацию задачи"""
         data = {
-            'task_title': 'Test Task',
-            'task_content': 'Content of test task',
+            'task_title': 'Valid Task',
+            'task_content': 'Content of a valid task',
             'task_status': 'новая',
             'task_user': self.user.id
         }
         response = self.client.post('/api/v1/tasks/', data, format='json')
-        """Проверяем, что задача успешно создана"""
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['task_title'], 'Test Task')
-        """Проверяем, что в ответе возвращается ID пользователя, а не сам объект"""
+        self.assertEqual(response.data['task_title'], 'Valid Task')
         self.assertEqual(response.data['task_user'], self.user.id)
 
     def test_task_status_choices(self):
