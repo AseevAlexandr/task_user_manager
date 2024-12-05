@@ -25,6 +25,20 @@ class UserViewSet(ModelViewSet):
             permission_classes = [IsAuthenticated]
         return super().get_permissions()
 
+    def get_queryset(self):
+        """
+        Функция фильтрует пользователей, чтобы каждый пользователь мог видеть только свои данные.
+        Если пользователь авторизован, то будет возвращен только его объект.
+        """
+        user = self.request.user
+        return User.objects.filter(id=user.id)
+
+    def perform_update(self, serializer):
+        """
+        Функция обновления данных пользователя. Обновляются только данные авторизованного пользователя.
+        """
+        serializer.save()
+
 
 def index_page(request):
     """
